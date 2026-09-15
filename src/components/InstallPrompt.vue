@@ -1,10 +1,10 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+
+import { isOnboardingComplete, onboarding } from '../data/onboardingStore';
 
 const DISMISS_UNTIL_KEY = 'ruqyah-install-dismiss-until';
 const DISMISS_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
-const BENEFITS_SEEN_KEY = 'ruqyah-howto-seen-v1';
-const TAP_HINT_SEEN_KEY = 'ruqyah-taphint-seen-v1';
 const ONBOARDING_DONE_AT_KEY = 'ruqyah-onboarding-done-at';
 const ONBOARDING_PROMPT_DELAY_MS = 2 * 60 * 1000;
 
@@ -12,15 +12,7 @@ const canShow = ref(false);
 const isInstalled = ref(false);
 const isIos = ref(false);
 const deferredInstallPrompt = ref(null);
-const onboardingActive = ref(true);
-
-function hasCompletedOnboarding() {
-  try {
-    return localStorage.getItem(BENEFITS_SEEN_KEY) === '1' && localStorage.getItem(TAP_HINT_SEEN_KEY) === '1';
-  } catch {
-    return false;
-  }
-}
+const onboardingActive = computed(() => onboarding.howToOpen || onboarding.settingsOpen || onboarding.tapHintOpen);
 
 function onboardingDelayPassed() {
   try {
@@ -77,7 +69,7 @@ function markDismissed() {
 
 function refreshVisibility() {
   isInstalled.value = detectStandalone();
-  if (!hasCompletedOnboarding() || onboardingActive.value || !onboardingDelayPassed()) {
+  if (!isOnboardingComplete() || onboardingActive.value || !onboardingDelayPassed()) {
     canShow.value = false;
     return;
   }
@@ -122,13 +114,12 @@ function onAppInstalled() {
   canShow.value = false;
 }
 
-function onOnboardingState(event) {
-  onboardingActive.value = !!event?.detail?.active;
-  if (!onboardingActive.value && hasCompletedOnboarding()) {
+watch(onboardingActive, (active) => {
+  if (!active && isOnboardingComplete()) {
     ensureOnboardingDoneAt();
   }
   refreshVisibility();
-}
+});
 
 const promptTitle = computed(() =>
   isIos.value ? 'Add Ruqyah to Home Screen' : 'Install Ruqyah App',
@@ -145,10 +136,8 @@ onMounted(() => {
 
   window.addEventListener('beforeinstallprompt', onBeforeInstallPrompt);
   window.addEventListener('appinstalled', onAppInstalled);
-  window.addEventListener('ruqyah:onboarding-state', onOnboardingState);
 
-  onboardingActive.value = !hasCompletedOnboarding();
-  if (!onboardingActive.value) {
+  if (!onboardingActive.value && isOnboardingComplete()) {
     ensureOnboardingDoneAt();
   }
 
@@ -164,7 +153,6 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('beforeinstallprompt', onBeforeInstallPrompt);
   window.removeEventListener('appinstalled', onAppInstalled);
-  window.removeEventListener('ruqyah:onboarding-state', onOnboardingState);
 });
 </script>
 
