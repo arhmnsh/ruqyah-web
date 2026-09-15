@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
 import { isOnboardingComplete, onboarding } from '../data/onboardingStore';
+import { t } from '../data/i18n';
 
 const DISMISS_UNTIL_KEY = 'ruqyah-install-dismiss-until';
 const DISMISS_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
@@ -121,15 +122,9 @@ watch(onboardingActive, (active) => {
   refreshVisibility();
 });
 
-const promptTitle = computed(() =>
-  isIos.value ? 'Add Ruqyah to Home Screen' : 'Install Ruqyah App',
-);
+const promptTitle = computed(() => (isIos.value ? t('installTitleIos') : t('installTitleOther')));
 
-const promptBody = computed(() =>
-  isIos.value
-    ? 'Open Share, then choose Add to Home Screen.'
-    : 'Install for quicker access and app-like experience.',
-);
+const promptBody = computed(() => (isIos.value ? t('installBodyIos') : t('installBodyOther')));
 
 onMounted(() => {
   isIos.value = detectIos();
@@ -170,9 +165,9 @@ onBeforeUnmount(() => {
           type="button"
           @click="installApp"
         >
-          Install
+          {{ t('install') }}
         </button>
-        <button class="install-btn" type="button" @click="dismissPrompt">Not now</button>
+        <button class="install-btn" type="button" @click="dismissPrompt">{{ t('notNow') }}</button>
       </div>
     </aside>
   </transition>

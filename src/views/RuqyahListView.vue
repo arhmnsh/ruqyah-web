@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 
 import ConfettiOverlay from '../components/ConfettiOverlay.vue';
 import RuqyahListItem from '../components/RuqyahListItem.vue';
+import { locale, t } from '../data/i18n';
 import { currentMode, MODE_COPY, MODE_THEME } from '../data/modeStore';
 import { closeTapHint, onboarding, openHowTo } from '../data/onboardingStore';
 import { itemsForForm, resolveItem, SECTIONS } from '../data/ruqyahData';
@@ -134,7 +135,7 @@ function openDetails(item) {
 }
 
 function resetCounters() {
-  if (!window.confirm('Reset all counters?')) return;
+  if (!window.confirm(t('resetConfirm'))) return;
   resetAllCounts();
 }
 </script>
@@ -143,8 +144,8 @@ function resetCounters() {
   <section>
     <header class="intro-strip">
       <h2 class="intro-title notranslate" lang="ar" translate="no">{{ copy.title_ar }}</h2>
-      <p class="intro-sub">{{ copy.title_en }} · {{ copy.window }}</p>
-      <p class="intro-count" aria-live="polite"><b>{{ completedCount }}</b>of {{ items.length }}</p>
+      <p class="intro-sub">{{ locale === 'ar' ? copy.sub_ar : copy.sub_en }}</p>
+      <p class="intro-count" aria-live="polite">{{ t('progressOf', completedCount, items.length) }}</p>
       <div class="intro-track" role="progressbar" aria-label="Progress through the wird" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="overallProgress"><i :style="{ width: `${overallProgress}%` }" /></div>
     </header>
 
@@ -152,7 +153,7 @@ function resetCounters() {
       <template v-for="row in rows" :key="row.key">
         <h2 v-if="row.type === 'section'" class="section-row">
           <span class="section-ar notranslate" lang="ar" translate="no">{{ row.section.ar }}</span>
-          <span class="section-en">{{ row.section.en }}</span>
+          <span class="section-en notranslate" :lang="locale" translate="no">{{ locale === 'ar' ? row.section.small_ar : row.section.en }}</span>
         </h2>
         <RuqyahListItem
           v-else
@@ -169,10 +170,10 @@ function resetCounters() {
     </div>
 
     <footer class="list-footer">
-      <button class="reset-btn" type="button" @click="resetCounters">Reset counters</button>
-      <button class="why-athkar-btn" type="button" @click="openHowTo">How to recite</button>
+      <button class="reset-btn" type="button" @click="resetCounters">{{ t('resetCounters') }}</button>
+      <button class="why-athkar-btn" type="button" @click="openHowTo">{{ t('howToRecite') }}</button>
       <div class="byline-wrap">
-        <a class="app-byline name" href="https://arhmn.sh" target="_blank" rel="noopener noreferrer">by AbdurRahaman Shah</a>
+        <a class="app-byline name" href="https://arhmn.sh" target="_blank" rel="noopener noreferrer">{{ t('byline') }}</a>
         <a class="app-byline site" href="https://arhmn.sh" target="_blank" rel="noopener noreferrer">arhmn.sh</a>
       </div>
     </footer>
@@ -184,8 +185,8 @@ function resetCounters() {
           <div class="tap-row-shadow" />
           <div class="tap-finger">👆</div>
         </div>
-        <p dir="ltr">Tap a row to count one recitation.</p>
-        <button type="button" class="tap-hint-close" dir="ltr">Got it</button>
+        <p>{{ t('tapHint') }}</p>
+        <button type="button" class="tap-hint-close">{{ t('gotIt') }}</button>
       </div>
     </transition>
   </section>

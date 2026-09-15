@@ -7,11 +7,12 @@ import {
   MORNING_MODE,
   setMode,
 } from '../data/modeStore';
+import { t } from '../data/i18n';
 
 const isEvening = computed(() => currentMode.value === EVENING_MODE);
 
 const toggleLabel = computed(() =>
-  isEvening.value ? 'Switch to morning ruqyah' : 'Switch to evening ruqyah',
+  isEvening.value ? t('switchToMorning') : t('switchToEvening'),
 );
 
 const toastVisible = ref(false);
@@ -35,7 +36,7 @@ function showToast(message) {
 function toggleMode() {
   const nextMode = isEvening.value ? MORNING_MODE : EVENING_MODE;
   setMode(nextMode);
-  showToast(nextMode === MORNING_MODE ? 'Morning ruqyah' : 'Evening ruqyah');
+  showToast(nextMode === MORNING_MODE ? t('morningToast') : t('eveningToast'));
 }
 
 onBeforeUnmount(() => {

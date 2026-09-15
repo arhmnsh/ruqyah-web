@@ -7,6 +7,7 @@ import InstallPrompt from './components/InstallPrompt.vue';
 import ModeToggle from './components/ModeToggle.vue';
 import SettingsSheet from './components/SettingsSheet.vue';
 import { closeHowTo, closeSettings, onboarding, openHowTo, openSettings, startOnboarding } from './data/onboardingStore';
+import { locale, t } from './data/i18n';
 
 const isHeaderHidden = ref(false);
 const route = useRoute();
@@ -47,14 +48,14 @@ onBeforeUnmount(() => {
   <div class="app-shell" :class="{ 'is-header-hidden': isHeaderHidden }">
     <header class="app-topbar">
       <div class="topbar-left">
-        <h1 class="app-title">Ruqyah</h1>
+        <h1 class="app-title notranslate" :lang="locale" translate="no">{{ t('appName') }}</h1>
       </div>
       <div class="topbar-right">
         <button
           ref="howToButtonEl"
           class="icon-btn"
           type="button"
-          aria-label="How to recite"
+          :aria-label="t('howToRecite')"
           aria-haspopup="dialog"
           :aria-expanded="onboarding.howToOpen"
           @click="openHowTo"
@@ -69,7 +70,7 @@ onBeforeUnmount(() => {
           ref="settingsButtonEl"
           class="icon-btn"
           type="button"
-          aria-label="Settings"
+          :aria-label="t('settings')"
           aria-haspopup="dialog"
           :aria-expanded="onboarding.settingsOpen"
           @click="openSettings"

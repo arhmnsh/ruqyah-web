@@ -168,8 +168,7 @@ main {
     inset 0 1px 0 rgba(255, 255, 255, 0.34);
   backdrop-filter: blur(18px) saturate(1.2);
   padding: 14px 14px 12px;
-  text-align: left;
-  direction: ltr;
+  text-align: start;
 }
 
 .benefits-modal h2 {
@@ -188,34 +187,28 @@ main {
   color: rgba(255, 251, 243, 0.94);
 }
 
-.benefits-modal ol {
+.method-list {
   margin: 0;
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 8px;
+  gap: 6px;
 }
 
-.benefits-modal li {
-  padding: 9px 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.26);
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.benefits-modal li h3 {
-  margin: 0 0 4px;
-  font-size: 0.86rem;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: rgba(255, 251, 243, 0.97);
-}
-
-.benefits-modal li p {
+.method-list li {
+  position: relative;
   margin: 0;
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: rgba(255, 251, 243, 0.92);
+  padding-inline-start: 20px;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: rgba(255, 251, 243, 0.94);
+}
+
+.method-list li::before {
+  content: "–";
+  position: absolute;
+  inset-inline-start: 0;
+  color: rgba(255, 251, 243, 0.55);
 }
 
 .benefits-hadith {
@@ -369,7 +362,7 @@ main {
   font-weight: 700;
   cursor: pointer;
   position: relative;
-  padding-left: 30px;
+  padding-inline-start: 30px;
 }
 
 .why-athkar-btn {
@@ -381,8 +374,6 @@ main {
   font-size: 0.78rem;
   font-weight: 700;
   cursor: pointer;
-  direction: ltr;
-  unicode-bidi: isolate;
 }
 
 .reset-btn::before {
@@ -390,7 +381,7 @@ main {
   font-size: 0.95rem;
   line-height: 1;
   position: absolute;
-  left: 11px;
+  inset-inline-start: 11px;
   top: 50%;
   transform: translateY(-50%);
 }
@@ -514,16 +505,13 @@ main {
   gap: 10px;
 }
 
-.install-copy {
-  text-align: left;
-  direction: ltr;
-}
-
 .install-title {
   margin: 0 0 3px;
   font-size: 0.9rem;
   font-weight: 700;
   color: rgba(255, 249, 238, 0.97);
+  text-align: start;
+  unicode-bidi: plaintext;
 }
 
 .install-body {
@@ -531,6 +519,8 @@ main {
   font-size: 0.8rem;
   line-height: 1.45;
   color: rgba(255, 247, 232, 0.84);
+  text-align: start;
+  unicode-bidi: plaintext;
 }
 
 .install-actions {
@@ -761,7 +751,8 @@ main {
   letter-spacing: 0.08em;
   color: rgba(255, 245, 229, 0.7);
   font-weight: 700;
-  text-align: left;
+  text-align: start;
+  unicode-bidi: plaintext;
 }
 
 .latin-block,
@@ -964,8 +955,7 @@ main {
   grid-column: 2;
   grid-row: 1 / span 2;
   align-self: center;
-  text-align: left;
-  direction: ltr;
+  unicode-bidi: plaintext;
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-soft);
@@ -1072,8 +1062,7 @@ main {
   width: min(560px, 100%);
   max-height: 88vh;
   overflow: auto;
-  direction: ltr;
-  text-align: left;
+  text-align: start;
   border-radius: 20px 20px 0 0;
   background: linear-gradient(180deg, rgba(20, 52, 46, 0.98), rgba(14, 40, 36, 0.98));
   border: 1px solid rgba(244, 241, 230, 0.16);
@@ -1193,13 +1182,6 @@ main {
 }
 
 /* ---------- how-to modal reuses the benefits styles ---------- */
-.benefits-modal .method-ar {
-  font-family: "Geeza Pro", "Noto Naskh Arabic", "Amiri", serif;
-  direction: rtl;
-  unicode-bidi: isolate;
-  font-size: 1.05em;
-}
-
 .benefits-note {
   margin: 10px 0 0;
   padding: 9px 10px;

@@ -1,6 +1,9 @@
 <script setup>
 import { computed } from 'vue';
 
+import { locale, t } from '../data/i18n';
+import { toArabicDigits } from '../data/ruqyahData';
+
 const props = defineProps({
   item: { type: Object, required: true },
   index: { type: Number, required: true },
@@ -42,12 +45,12 @@ const isComplete = computed(() => props.progress >= 100);
       <button
         class="details-hit"
         type="button"
-        :aria-label="`Open details for ${item.name_en}`"
+        :aria-label="`${t('openDetailsFor')} ${locale === 'ar' ? item.name_ar : item.name_en}`"
         @click="emit('details')"
       >
         <span aria-hidden="true">❮</span>
       </button>
-      <p class="side-counter">{{ currentCount }} / {{ item.count_display }}</p>
+      <p class="side-counter">{{ locale === 'ar' ? `${toArabicDigits(currentCount)} \u002F ${toArabicDigits(item.count_display)}` : `${currentCount} / ${item.count_display}` }}</p>
     </aside>
     <button class="body-hit" type="button" @click="emit('increment')">
       <p class="row-head">
