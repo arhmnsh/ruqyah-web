@@ -30,16 +30,18 @@ export const MODE_THEME = {
   },
 };
 
+// title_ar is the big heading and is always Arabic, regardless of interface language — it's the
+// actual name of the wird, not app chrome. sub_en/sub_ar are the small annotation beneath it.
 export const MODE_COPY = {
   [MORNING_MODE]: {
     title_ar: 'وِرْدُ الصَّبَاحِ',
-    title_en: 'Morning ruqyah',
-    window: 'Best after Fajr until sunrise · valid until midday',
+    sub_en: 'Morning ruqyah · Best after Fajr until sunrise · valid until midday',
+    sub_ar: 'ورد الصباح · الأفضل بعد الفجر حتى الشروق، ويصح حتى الظهر',
   },
   [EVENING_MODE]: {
     title_ar: 'وِرْدُ الْمَسَاءِ',
-    title_en: 'Evening ruqyah',
-    window: 'Best after ʿAṣr until Maghrib · valid into the night',
+    sub_en: 'Evening ruqyah · Best after ʿAṣr until Maghrib · valid into the night',
+    sub_ar: 'ورد المساء · الأفضل بعد العصر حتى المغرب، ويصح إلى الليل',
   },
 };
 

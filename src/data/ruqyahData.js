@@ -8,10 +8,12 @@ export const SECTION_QURAN = 'quran';
 export const SECTION_EXTENDED = 'extended';
 export const SECTION_DUA = 'dua';
 
+// `en`/`small_ar` are the small secondary label next to each section's big Arabic name — in
+// English or Arabic, matching whichever the interface itself is currently showing in.
 export const SECTIONS = {
-  [SECTION_QURAN]: { ar: 'القُرْآن', en: 'Daily Qur’an' },
-  [SECTION_EXTENDED]: { ar: 'الزِّيَادَة', en: 'Extended passages' },
-  [SECTION_DUA]: { ar: 'الأَدْعِيَةُ وَالأَذْكَار', en: 'Prophetic duas' },
+  [SECTION_QURAN]: { ar: 'القُرْآن', en: 'Daily Qur’an', small_ar: 'الوِرْدُ اليَوْمِيّ' },
+  [SECTION_EXTENDED]: { ar: 'الزِّيَادَة', en: 'Extended passages', small_ar: 'قِرَاءَاتٌ إِضَافِيَّة' },
+  [SECTION_DUA]: { ar: 'الأَدْعِيَةُ وَالأَذْكَار', en: 'Prophetic duas', small_ar: 'أَدْعِيَةٌ نَبَوِيَّة' },
 };
 
 const KALIMAT_TAMMAH = 'بِكَلِمَاتِ اللهِ التَّامَّةِ مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ وَمِنْ كُلِّ عَيْنٍ لَامَّةٍ';
