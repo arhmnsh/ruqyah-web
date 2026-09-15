@@ -13,12 +13,17 @@ import {
   TARGET_HIM,
   TARGET_SELF,
 } from '../data/settingsStore';
+import { useFlyTransition } from '../utils/flyTransition';
 
 const props = defineProps({
   open: { type: Boolean, required: true },
+  // The template ref (an object with `.value`) of the top-bar button this sheet flies into on close.
+  anchorEl: { type: Object, default: null },
 });
 
 const emit = defineEmits(['close']);
+
+const { onEnter, onLeave } = useFlyTransition(() => props.anchorEl?.value || null, '.sheet');
 
 const shortCount = itemsForForm(FORM_SHORT).length;
 const longCount = itemsForForm(FORM_LONG).length;
@@ -28,10 +33,13 @@ const forms = computed(() => [
   { value: FORM_LONG, label: 'Long', help: `${longCount} items` },
 ]);
 
+// Him/Her recite the ruqyah over someone else — a sick relative, a child, anyone in your care —
+// so the wording addresses them directly ("I recite over you") rather than yourself. Arabic marks
+// the grammatical gender of the person addressed, so the two differ in their actual wording.
 const targets = [
-  { value: TARGET_SELF, label: 'Myself', help: 'أَرْقِي نَفْسِي' },
-  { value: TARGET_HIM, label: 'Him', help: 'أَرْقِيكَ' },
-  { value: TARGET_HER, label: 'Her', help: 'أَرْقِيكِ' },
+  { value: TARGET_SELF, label: 'Myself', help: 'أَرْقِي نَفْسِي', note: 'First person — the usual daily wird' },
+  { value: TARGET_HIM, label: 'Him', help: 'أَرْقِيكَ', note: 'Recite over another person — male' },
+  { value: TARGET_HER, label: 'Her', help: 'أَرْقِيكِ', note: 'Recite over another person — female' },
 ];
 
 const modes = [
@@ -41,7 +49,7 @@ const modes = [
 </script>
 
 <template>
-  <transition name="sheet">
+  <Transition :css="false" @enter="onEnter" @leave="onLeave">
     <div v-if="props.open" class="sheet-backdrop" @click.self="emit('close')">
       <section class="sheet" role="dialog" aria-modal="true" aria-label="Settings">
         <div class="sheet-handle" aria-hidden="true" />
@@ -73,8 +81,10 @@ const modes = [
         <div class="setting">
           <p class="setting-label">Reciting for</p>
           <p class="setting-help">
-            The duas that address the person being recited over change their wording. Your own
-            adhkar stay in the first person.
+            Reciting for yourself is the usual daily wird, in the first person. Reciting for someone
+            else — a sick relative, a child, anyone in your care — addresses them directly instead,
+            and Arabic grammar marks whether that person is male or female, so Him and Her carry
+            different wording.
           </p>
           <div class="segmented" role="group" aria-label="Reciting for">
             <button
@@ -88,6 +98,7 @@ const modes = [
               <small class="notranslate" lang="ar" translate="no">{{ option.help }}</small>
             </button>
           </div>
+          <p class="setting-fine">{{ targets.find((t) => t.value === settings.target)?.note }}</p>
         </div>
 
         <div class="setting">
@@ -110,5 +121,5 @@ const modes = [
         </div>
       </section>
     </div>
-  </transition>
+  </Transition>
 </template>
