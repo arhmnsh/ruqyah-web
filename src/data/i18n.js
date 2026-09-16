@@ -66,6 +66,7 @@ const STRINGS = {
     progressOf: (done, total) => `${done} of ${total}`,
     resetCounters: 'Reset counters',
     resetConfirm: 'Reset all counters?',
+    openAthkar: 'Open Athkar',
     byline: 'by AbdurRahaman Shah',
 
     tapHint: 'Tap anywhere on a passage to count one recitation.',
@@ -138,6 +139,7 @@ const STRINGS = {
     progressOf: (done, total) => `${toArabicDigits(done)} من ${toArabicDigits(total)}`,
     resetCounters: 'إعادة ضبط العدّادات',
     resetConfirm: 'هل تريد إعادة ضبط جميع العدّادات؟',
+    openAthkar: 'فتح تطبيق الأذكار',
     byline: 'بقلم عبدالرحمن شاه',
 
     tapHint: 'اضغط في أي مكان على السطر لعدّ قراءة واحدة.',

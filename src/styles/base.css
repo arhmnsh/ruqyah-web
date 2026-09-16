@@ -389,6 +389,35 @@ main {
   transform: translateY(-50%);
 }
 
+.app-link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(255, 247, 232, 0.24);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 248, 236, 0.9);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.app-link-btn::after {
+  content: "↗";
+  font-size: 0.95rem;
+  line-height: 1;
+  opacity: 0.7;
+}
+
+.app-link-btn:hover,
+.app-link-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 247, 232, 0.42);
+  color: rgba(255, 252, 244, 1);
+}
+
 .mode-fab:active {
   transform: scale(0.96);
 }

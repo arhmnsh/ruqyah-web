@@ -171,6 +171,7 @@ function resetCounters() {
 
     <footer class="list-footer">
       <button class="reset-btn" type="button" @click="resetCounters">{{ t('resetCounters') }}</button>
+      <a class="app-link-btn" href="https://athkar.arhmn.sh/">{{ t('openAthkar') }}</a>
       <div class="byline-wrap">
         <a class="app-byline name" href="https://arhmn.sh" target="_blank" rel="noopener noreferrer">{{ t('byline') }}</a>
         <a class="app-byline site" href="https://arhmn.sh" target="_blank" rel="noopener noreferrer">arhmn.sh</a>
