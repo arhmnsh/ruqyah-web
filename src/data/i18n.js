@@ -68,7 +68,7 @@ const STRINGS = {
     resetConfirm: 'Reset all counters?',
     byline: 'by AbdurRahaman Shah',
 
-    tapHint: 'Tap a row to count one recitation.',
+    tapHint: 'Tap anywhere on a passage to count one recitation.',
     gotIt: 'Got it',
 
     backToList: 'Back to list',
@@ -140,7 +140,7 @@ const STRINGS = {
     resetConfirm: 'هل تريد إعادة ضبط جميع العدّادات؟',
     byline: 'بقلم عبدالرحمن شاه',
 
-    tapHint: 'اضغط على السطر لعدّ قراءة واحدة.',
+    tapHint: 'اضغط في أي مكان على السطر لعدّ قراءة واحدة.',
     gotIt: 'حسنًا',
 
     backToList: 'العودة إلى القائمة',
