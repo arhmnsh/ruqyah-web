@@ -2,8 +2,26 @@
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
+import AudioPlayerBar from '../components/AudioPlayerBar.vue';
 import ConfettiOverlay from '../components/ConfettiOverlay.vue';
 import RuqyahListItem from '../components/RuqyahListItem.vue';
+import { audioTracksForItem } from '../data/audioManifest.js';
+import {
+  activeAudioItemId,
+  audioCurrentTarget,
+  audioHasActiveItem,
+  audioIsPlaying,
+  audioState,
+  audioStatus,
+  nextAudio,
+  pauseAudio,
+  playPlaylist,
+  playSingle,
+  previousAudio,
+  resumeAudio,
+  setAudioSpeed,
+  stopAudio,
+} from '../data/audioStore.js';
 import { locale, t } from '../data/i18n';
 import { currentMode, MODE_COPY, MODE_THEME } from '../data/modeStore';
 import { closeTapHint, onboarding } from '../data/onboardingStore';
@@ -60,6 +78,12 @@ const items = computed(() => {
   });
 });
 
+const audioItems = computed(() => items.value.map((item) => ({
+  ...item,
+  audioTracks: audioTracksForItem(item),
+})));
+const activeAudioItem = computed(() => audioItems.value.find((item) => item.id === activeAudioItemId.value) || null);
+
 // Rows interleaved with a header wherever the section changes.
 const rows = computed(() => {
   const out = [];
@@ -91,6 +115,7 @@ watch(allCompleted, (next, prev) => {
 
 onBeforeUnmount(() => {
   saveListScroll();
+  stopAudio();
   if (confettiTimer) clearTimeout(confettiTimer);
 });
 
@@ -138,6 +163,46 @@ function resetCounters() {
   if (!window.confirm(t('resetConfirm'))) return;
   resetAllCounts();
 }
+
+function playAllAudio() {
+  playPlaylist(audioItems.value);
+}
+
+function handleAudioToggle() {
+  if (audioIsPlaying.value) {
+    pauseAudio();
+    return;
+  }
+
+  if (audioStatus.value === 'complete') {
+    playAllAudio();
+    return;
+  }
+
+  if (audioHasActiveItem.value) {
+    resumeAudio();
+    return;
+  }
+
+  playAllAudio();
+}
+
+function playItemAudio(item) {
+  const index = audioItems.value.findIndex((entry) => entry.id === item.id);
+  if (index < 0) return;
+
+  if (activeAudioItemId.value === item.id && audioIsPlaying.value) {
+    pauseAudio();
+    return;
+  }
+
+  if (activeAudioItemId.value === item.id && audioStatus.value === 'paused') {
+    resumeAudio();
+    return;
+  }
+
+  playSingle(audioItems.value, index);
+}
 </script>
 
 <template>
@@ -147,6 +212,14 @@ function resetCounters() {
       <p class="intro-sub">{{ locale === 'ar' ? copy.sub_ar : copy.sub_en }}</p>
       <p class="intro-count" aria-live="polite">{{ t('progressOf', completedCount, items.length) }}</p>
       <div class="intro-track" role="progressbar" aria-label="Progress through the wird" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="overallProgress"><i :style="{ width: `${overallProgress}%` }" /></div>
+      <div class="audio-launcher">
+        <button class="audio-launch-btn" type="button" @click="handleAudioToggle">
+          <svg v-if="audioIsPlaying" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7V5Zm6 0h4v14h-4V5Z" /></svg>
+          <svg v-else viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7V5Z" /></svg>
+          <span>{{ audioIsPlaying ? t('pauseAudio') : audioStatus === 'complete' ? t('replayAudio') : audioHasActiveItem ? t('resumeAudio') : t('playRuqyah') }}</span>
+        </button>
+        <span class="audio-reciter-note">{{ t('audioReciter') }}</span>
+      </div>
     </header>
 
     <div class="list-wrap">
@@ -163,8 +236,11 @@ function resetCounters() {
           :current-count="row.item.currentCount"
           :progress="row.item.progress"
           :theme="theme"
+          :audio-active="activeAudioItemId === row.item.id"
+          :audio-playing="activeAudioItemId === row.item.id && audioIsPlaying"
           @increment="handleIncrement(row.item)"
           @details="openDetails(row.item)"
+          @audio="playItemAudio(row.item)"
         />
       </template>
     </div>
@@ -177,6 +253,21 @@ function resetCounters() {
         <a class="app-byline site" href="https://arhmn.sh" target="_blank" rel="noopener noreferrer">arhmn.sh</a>
       </div>
     </footer>
+    <AudioPlayerBar
+      v-if="audioHasActiveItem && activeAudioItem"
+      :item="activeAudioItem"
+      :repeat="audioState.repetitionIndex + 1"
+      :target="audioCurrentTarget"
+      :status="audioStatus"
+      :speed="audioState.speed"
+      :current-time="audioState.currentTime"
+      :duration="audioState.duration"
+      @toggle="handleAudioToggle"
+      @previous="previousAudio"
+      @next="nextAudio"
+      @speed="setAudioSpeed"
+      @stop="stopAudio"
+    />
     <ConfettiOverlay :visible="showConfetti" />
 
     <transition name="overlay-fade">
