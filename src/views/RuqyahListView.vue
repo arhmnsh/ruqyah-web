@@ -6,7 +6,7 @@ import ConfettiOverlay from '../components/ConfettiOverlay.vue';
 import RuqyahListItem from '../components/RuqyahListItem.vue';
 import { locale, t } from '../data/i18n';
 import { currentMode, MODE_COPY, MODE_THEME } from '../data/modeStore';
-import { closeTapHint, onboarding, openHowTo } from '../data/onboardingStore';
+import { closeTapHint, onboarding } from '../data/onboardingStore';
 import { itemsForForm, resolveItem, SECTIONS } from '../data/ruqyahData';
 import { settings } from '../data/settingsStore';
 import {
@@ -171,7 +171,6 @@ function resetCounters() {
 
     <footer class="list-footer">
       <button class="reset-btn" type="button" @click="resetCounters">{{ t('resetCounters') }}</button>
-      <button class="why-athkar-btn" type="button" @click="openHowTo">{{ t('howToRecite') }}</button>
       <div class="byline-wrap">
         <a class="app-byline name" href="https://arhmn.sh" target="_blank" rel="noopener noreferrer">{{ t('byline') }}</a>
         <a class="app-byline site" href="https://arhmn.sh" target="_blank" rel="noopener noreferrer">arhmn.sh</a>

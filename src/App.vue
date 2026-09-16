@@ -53,7 +53,7 @@ onBeforeUnmount(() => {
       <div class="topbar-right">
         <button
           ref="howToButtonEl"
-          class="icon-btn"
+          class="icon-btn guide-btn"
           type="button"
           :aria-label="t('howToRecite')"
           aria-haspopup="dialog"
@@ -61,9 +61,8 @@ onBeforeUnmount(() => {
           @click="openHowTo"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="9" />
-            <path d="M12 10.6v5.3" />
-            <circle cx="12" cy="7.7" r="0.6" fill="currentColor" stroke="none" />
+            <path d="M4.5 5.5c2.7-.9 5.1-.3 7.5 1.3v12c-2.4-1.6-4.8-2.2-7.5-1.3z" />
+            <path d="M19.5 5.5c-2.7-.9-5.1-.3-7.5 1.3v12c2.4-1.6 4.8-2.2-7.5-1.3z" />
           </svg>
         </button>
         <button
