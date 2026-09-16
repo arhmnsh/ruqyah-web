@@ -54,7 +54,7 @@ const items = computed(() => {
     const resolved = resolveItem(item, context.value);
     return {
       ...resolved,
-      currentCount: Math.min(getReadCount(item.id), resolved.count_display),
+      currentCount: getReadCount(item.id),
       progress: getProgress(item.id, resolved.count_display),
     };
   });

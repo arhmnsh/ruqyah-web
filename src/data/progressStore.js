@@ -80,7 +80,7 @@ export function getReadCount(id, mode = DEFAULT_MODE) {
 }
 
 export function incrementReadCount(id, targetCount, mode = DEFAULT_MODE) {
-  const next = Math.min(getReadCount(id, mode) + 1, targetCount);
+  const next = getReadCount(id, mode) + 1;
   progressMap[mapKey(id, mode)] = next;
   saveMap(progressMap);
   progressVersion.value += 1;
