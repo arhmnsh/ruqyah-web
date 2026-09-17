@@ -46,9 +46,9 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 10px 12px 8px;
+  padding: max(10px, env(safe-area-inset-top, 0px)) 12px 8px;
   background: var(--topbar-bg);
-  min-height: var(--topbar-h);
+  min-height: calc(var(--topbar-h) + env(safe-area-inset-top, 0px));
   transition:
     transform 260ms ease,
     opacity 220ms ease;
@@ -432,7 +432,7 @@ main {
 .overall-progress-edge {
   position: fixed;
   z-index: 60;
-  inset: 0 0 auto;
+  inset: env(safe-area-inset-top, 0px) 0 auto;
   height: 4px;
   pointer-events: none;
   background: rgba(0, 0, 0, 0.22);
