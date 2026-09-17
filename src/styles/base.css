@@ -741,14 +741,27 @@ main {
 
 .audio-panel-enter-active,
 .audio-panel-leave-active {
-  transition: opacity 280ms ease, transform 340ms cubic-bezier(0.22, 1, 0.36, 1);
+  position: absolute;
+  inset-inline-end: 0;
+  bottom: 0;
+  transition: opacity 280ms ease, transform 340ms cubic-bezier(0.22, 1, 0.36, 1), border-radius 340ms cubic-bezier(0.22, 1, 0.36, 1);
   transform-origin: bottom left;
 }
 
-.audio-panel-enter-from,
+.audio-panel-enter-from {
+  opacity: 0;
+  transform: scaleX(0.12) scaleY(0.72);
+  border-radius: 999px;
+}
+
+.audio-panel-leave-active {
+  pointer-events: none;
+}
+
 .audio-panel-leave-to {
   opacity: 0;
-  transform: translateY(14px) scale(0.82);
+  transform: scaleX(0.12) scaleY(0.72);
+  border-radius: 999px;
 }
 
 .app-shell:has(.audio-player-anchor.is-expanded) .list-footer {
@@ -1637,16 +1650,15 @@ main {
 @media (max-width: 560px) {
   .audio-player-anchor {
     inset-inline: 12px;
-    width: auto;
+    width: 56px;
   }
 
   .audio-player-anchor:not(.is-expanded) {
     inset-inline-start: auto;
-    width: 56px;
   }
 
   .audio-player-anchor.is-expanded {
-    width: auto;
+    width: calc(100vw - 24px);
   }
 
   .audio-dock-actions {

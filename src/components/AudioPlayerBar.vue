@@ -20,7 +20,7 @@ const isExpanded = computed(() => props.expanded && Boolean(props.item));
 
 <template>
   <div class="audio-player-anchor" :class="{ 'is-expanded': isExpanded }">
-    <transition name="audio-panel" mode="out-in">
+    <transition name="audio-panel">
       <aside v-if="isExpanded" key="expanded" class="audio-dock" :class="{ 'is-error': status === 'error' }" :aria-label="t('audioPlayer')">
         <div class="audio-dock-progress" aria-hidden="true">
           <i :style="{ width: `${progress}%` }" />
