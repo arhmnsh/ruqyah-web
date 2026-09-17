@@ -113,7 +113,7 @@ const completedRecitations = computed(() => items.value.reduce(
 ));
 const overallProgress = computed(() => (
   totalRecitations.value
-    ? Math.round((completedRecitations.value / totalRecitations.value) * 100)
+    ? (completedRecitations.value / totalRecitations.value) * 100
     : 0
 ));
 
@@ -243,7 +243,6 @@ function playItemAudio(item) {
     <header class="intro-strip">
       <h2 class="intro-title notranslate" lang="ar" translate="no">{{ copy.title_ar }}</h2>
       <p class="intro-sub">{{ locale === 'ar' ? copy.sub_ar : copy.sub_en }}</p>
-      <div class="intro-track" role="progressbar" :aria-label="t('progressLabel')" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="overallProgress"><i :style="{ width: `${overallProgress}%` }" /></div>
     </header>
 
     <div class="list-wrap">
