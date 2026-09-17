@@ -5,8 +5,13 @@ import { locale, t } from '../data/i18n';
 import { currentMode, EVENING_MODE, MORNING_MODE, setMode } from '../data/modeStore';
 import { itemsForForm } from '../data/ruqyahData';
 import {
+  FONT_SIZE_LARGE,
+  FONT_SIZE_MEDIUM,
+  FONT_SIZE_SMALL,
+  FONT_SIZE_XLARGE,
   FORM_LONG,
   FORM_SHORT,
+  setFontSize,
   setForm,
   setTarget,
   settings,
@@ -47,6 +52,13 @@ const targets = computed(() => [
 const modes = computed(() => [
   { value: MORNING_MODE, label: t('morning'), help: 'وِرْدُ الصَّبَاحِ' },
   { value: EVENING_MODE, label: t('evening'), help: 'وِرْدُ الْمَسَاءِ' },
+]);
+
+const fontSizes = computed(() => [
+  { value: FONT_SIZE_SMALL, label: t('fontSizeSmall'), help: 'A-' },
+  { value: FONT_SIZE_MEDIUM, label: t('fontSizeMedium'), help: 'A' },
+  { value: FONT_SIZE_LARGE, label: t('fontSizeLarge'), help: 'A+' },
+  { value: FONT_SIZE_XLARGE, label: t('fontSizeXLarge'), help: 'A++' },
 ]);
 
 function handleKeyDown(e) {
@@ -122,6 +134,23 @@ onBeforeUnmount(() => {
             >
               {{ option.label }}
               <small class="notranslate" lang="ar" translate="no">{{ option.help }}</small>
+            </button>
+          </div>
+        </div>
+
+        <div class="setting">
+          <p class="setting-label">{{ t('fontSizeLabel') }}</p>
+          <p class="setting-help">{{ t('fontSizeHelp') }}</p>
+          <div class="segmented" role="group" :aria-label="t('fontSizeLabel')">
+            <button
+              v-for="option in fontSizes"
+              :key="option.value"
+              type="button"
+              :aria-pressed="settings.fontSize === option.value"
+              @click="setFontSize(option.value)"
+            >
+              {{ option.label }}
+              <small>{{ option.help }}</small>
             </button>
           </div>
         </div>

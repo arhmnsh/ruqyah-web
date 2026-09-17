@@ -7,6 +7,23 @@
   --divider: rgba(244, 241, 230, 0.14);
   --amber: #d9a35b;
   --amber-deep: #b9822f;
+  --arabic-font-size: clamp(1.3rem, 2.6vw, 1.75rem);
+}
+
+:root[data-font-size="small"] {
+  --arabic-font-size: clamp(1.15rem, 2.1vw, 1.45rem);
+}
+
+:root[data-font-size="medium"] {
+  --arabic-font-size: clamp(1.3rem, 2.6vw, 1.75rem);
+}
+
+:root[data-font-size="large"] {
+  --arabic-font-size: clamp(1.5rem, 3.2vw, 2.15rem);
+}
+
+:root[data-font-size="xlarge"] {
+  --arabic-font-size: clamp(1.75rem, 3.8vw, 2.6rem);
 }
 
 * {
@@ -1191,7 +1208,7 @@ main {
   font-family: "Geeza Pro", "Noto Naskh Arabic", "Amiri", serif;
   direction: rtl;
   unicode-bidi: plaintext;
-  font-size: clamp(1.3rem, 2.6vw, 1.75rem);
+  font-size: var(--arabic-font-size);
   font-weight: 600;
   line-height: 1.78;
   letter-spacing: 0;
@@ -1289,7 +1306,7 @@ main {
   margin: 0;
   font-family: "Geeza Pro", "Noto Naskh Arabic", "Amiri", serif;
   direction: rtl;
-  font-size: clamp(1.36rem, 2.8vw, 2.04rem);
+  font-size: calc(var(--arabic-font-size) * 1.08);
   font-weight: 600;
   line-height: 1.82;
   color: rgba(255, 252, 244, 0.99) !important;

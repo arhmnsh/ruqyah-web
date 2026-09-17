@@ -1,10 +1,11 @@
 <script setup>
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import AudioPlayerBar from '../components/AudioPlayerBar.vue';
 import ConfettiOverlay from '../components/ConfettiOverlay.vue';
 import RuqyahListItem from '../components/RuqyahListItem.vue';
+import { usePinchFontResize } from '../utils/pinchGesture.js';
 import { audioRepetitionsPerTrackForItem, audioTracksForItem } from '../data/audioManifest.js';
 import {
   activeAudioItemId,
@@ -128,7 +129,34 @@ watch(allCompleted, (next, prev) => {
   }
 });
 
+const fontToastVisible = ref(false);
+const fontToastText = ref('');
+let fontToastTimer = null;
+let cleanupPinch = null;
+
+function onFontChange(size) {
+  const sizeMap = {
+    small: t('fontSizeSmall'),
+    medium: t('fontSizeMedium'),
+    large: t('fontSizeLarge'),
+    xlarge: t('fontSizeXLarge'),
+  };
+  fontToastText.value = t('fontSizeToast', sizeMap[size] || size);
+  fontToastVisible.value = true;
+  if (fontToastTimer) clearTimeout(fontToastTimer);
+  fontToastTimer = setTimeout(() => {
+    fontToastVisible.value = false;
+    fontToastTimer = null;
+  }, 1600);
+}
+
+onMounted(() => {
+  cleanupPinch = usePinchFontResize(window, onFontChange);
+});
+
 onBeforeUnmount(() => {
+  if (cleanupPinch) cleanupPinch();
+  if (fontToastTimer) clearTimeout(fontToastTimer);
   saveListScroll();
   audioPanelOpen.value = false;
   stopAudio();
@@ -301,6 +329,12 @@ function playItemAudio(item) {
         </div>
         <p>{{ t('tapHint') }}</p>
         <button type="button" class="tap-hint-close">{{ t('gotIt') }}</button>
+      </div>
+    </transition>
+
+    <transition name="mode-toast">
+      <div v-if="fontToastVisible" class="mode-toast font-toast" role="status" aria-live="polite">
+        {{ fontToastText }}
       </div>
     </transition>
   </section>

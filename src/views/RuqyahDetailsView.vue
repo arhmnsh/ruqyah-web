@@ -1,14 +1,36 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { currentMode } from '../data/modeStore';
 import { locale, t } from '../data/i18n';
 import { resolveItem, ruqyahData } from '../data/ruqyahData';
 import { settings } from '../data/settingsStore';
+import { usePinchFontResize } from '../utils/pinchGesture';
 
 const route = useRoute();
 const router = useRouter();
+
+const fontToastVisible = ref(false);
+const fontToastText = ref('');
+let fontToastTimer = null;
+let cleanupPinch = null;
+
+function onFontChange(size) {
+  const sizeMap = {
+    small: t('fontSizeSmall'),
+    medium: t('fontSizeMedium'),
+    large: t('fontSizeLarge'),
+    xlarge: t('fontSizeXLarge'),
+  };
+  fontToastText.value = t('fontSizeToast', sizeMap[size] || size);
+  fontToastVisible.value = true;
+  if (fontToastTimer) clearTimeout(fontToastTimer);
+  fontToastTimer = setTimeout(() => {
+    fontToastVisible.value = false;
+    fontToastTimer = null;
+  }, 1600);
+}
 
 function handleKeyDown(e) {
   if (e.key === 'Escape') {
@@ -17,10 +39,13 @@ function handleKeyDown(e) {
 }
 
 onMounted(() => {
+  cleanupPinch = usePinchFontResize(window, onFontChange);
   window.addEventListener('keydown', handleKeyDown);
 });
 
 onBeforeUnmount(() => {
+  if (cleanupPinch) cleanupPinch();
+  if (fontToastTimer) clearTimeout(fontToastTimer);
   window.removeEventListener('keydown', handleKeyDown);
 });
 
@@ -73,4 +98,10 @@ const repeat = computed(() => (item.value?.count_display > 1 ? t('repeatTimes', 
       <p>{{ t('notFound') }}</p>
     </div>
   </section>
+
+  <transition name="mode-toast">
+    <div v-if="fontToastVisible" class="mode-toast font-toast" role="status" aria-live="polite">
+      {{ fontToastText }}
+    </div>
+  </transition>
 </template>
