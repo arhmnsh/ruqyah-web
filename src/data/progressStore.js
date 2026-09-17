@@ -71,17 +71,20 @@ function resetIfInactive() {
 resetIfInactive();
 
 function mapKey(id, mode = DEFAULT_MODE) {
-  return String(id);
+  return `${mode}:${id}`;
 }
 
 export function getReadCount(id, mode = DEFAULT_MODE) {
-  const value = progressMap[mapKey(id, mode)];
+  const value = progressMap[mapKey(id, mode)] ?? progressMap[String(id)];
   return typeof value === 'number' && value >= 0 ? value : 0;
 }
 
 export function incrementReadCount(id, targetCount, mode = DEFAULT_MODE) {
   const next = getReadCount(id, mode) + 1;
   progressMap[mapKey(id, mode)] = next;
+  if (String(id) in progressMap) {
+    delete progressMap[String(id)];
+  }
   saveMap(progressMap);
   progressVersion.value += 1;
   markUsage();

@@ -1,4 +1,5 @@
 import { computed, reactive } from 'vue';
+import { currentMode } from './modeStore.js';
 import { incrementReadCount } from './progressStore.js';
 
 export const audioState = reactive({
@@ -120,7 +121,7 @@ function handleTrackEnded() {
   const repetitionsCompleted = Math.min(repetitionsPerTrack, target - audioState.repetitionIndex);
 
   for (let i = 0; i < repetitionsCompleted; i += 1) {
-    incrementReadCount(entry.id, target);
+    incrementReadCount(entry.id, target, currentMode.value);
   }
   audioState.repetitionIndex += repetitionsCompleted;
 

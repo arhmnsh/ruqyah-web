@@ -74,8 +74,8 @@ const items = computed(() => {
     const resolved = resolveItem(item, context.value);
     return {
       ...resolved,
-      currentCount: getReadCount(item.id),
-      progress: getProgress(item.id, resolved.count_display),
+      currentCount: getReadCount(item.id, currentMode.value),
+      progress: getProgress(item.id, resolved.count_display, currentMode.value),
     };
   });
 });
@@ -139,7 +139,7 @@ restoreListScroll();
 
 function handleIncrement(item) {
   const target = item.count_display;
-  const currentCount = Math.min(getReadCount(item.id), target);
+  const currentCount = Math.min(getReadCount(item.id, currentMode.value), target);
   const willCompleteThisTap = currentCount < target && currentCount + 1 >= target;
 
   let anchorTop = null;
@@ -154,7 +154,7 @@ function handleIncrement(item) {
     }
   }
 
-  incrementReadCount(item.id, target);
+  incrementReadCount(item.id, target, currentMode.value);
 
   if (willCompleteThisTap && anchorTop !== null && nextId !== null) {
     nextTick(() => {
