@@ -106,18 +106,22 @@ function handleTrackEnded() {
   }
 
   const target = Number(entry.count_display) || 1;
-  incrementReadCount(entry.id, target);
+  const repetitionsPerTrack = Math.max(Number(entry.audioRepetitions) || 1, 1);
+  const repetitionsCompleted = Math.min(repetitionsPerTrack, target - audioState.repetitionIndex);
 
-  if (audioState.repetitionIndex + 1 < target) {
-    audioState.repetitionIndex += 1;
+  for (let i = 0; i < repetitionsCompleted; i += 1) {
+    incrementReadCount(entry.id, target);
+  }
+  audioState.repetitionIndex += repetitionsCompleted;
+
+  if (audioState.repetitionIndex < target) {
     audioState.segmentIndex = 0;
     setTrack();
     return;
   }
 
   if (audioState.singleMode) {
-    audioState.status = 'paused';
-    audioState.repetitionIndex = 0;
+    audioState.status = 'complete';
     audioState.segmentIndex = 0;
     audioState.currentTime = 0;
     if (audioElement) {
@@ -173,7 +177,7 @@ export function resumeAudio() {
 
 export function setAudioSpeed(speed) {
   const nextSpeed = Number(speed);
-  if (![0.75, 1, 1.25, 1.5].includes(nextSpeed)) return;
+  if (![0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].includes(nextSpeed)) return;
 
   audioState.speed = nextSpeed;
   if (audioElement) audioElement.playbackRate = nextSpeed;

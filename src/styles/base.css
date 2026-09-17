@@ -492,6 +492,7 @@ main {
 
 .audio-dock-kicker,
 .audio-dock-title,
+.audio-dock-subtitle,
 .audio-dock-meta,
 .audio-dock-error {
   margin: 0;
@@ -510,6 +511,14 @@ main {
   color: var(--text-strong);
   font-size: 0.92rem;
   font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.audio-dock-subtitle {
+  overflow: hidden;
+  color: rgba(255, 248, 232, 0.78);
+  font-size: 0.74rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -620,6 +629,30 @@ main {
   color: var(--text-strong);
   padding: 4px 7px;
   font: inherit;
+}
+
+.audio-speed-step {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid rgba(255, 247, 232, 0.22);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.12);
+  color: var(--text-strong);
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.audio-speed-step:hover:not(:disabled),
+.audio-speed-step:focus-visible:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 247, 232, 0.42);
+}
+
+.audio-speed-step:disabled {
+  cursor: not-allowed;
+  opacity: 0.32;
 }
 
 .app-shell:has(.audio-dock) .list-footer {

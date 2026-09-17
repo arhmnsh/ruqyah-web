@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router';
 import AudioPlayerBar from '../components/AudioPlayerBar.vue';
 import ConfettiOverlay from '../components/ConfettiOverlay.vue';
 import RuqyahListItem from '../components/RuqyahListItem.vue';
-import { audioTracksForItem } from '../data/audioManifest.js';
+import { audioRepetitionsPerTrackForItem, audioTracksForItem } from '../data/audioManifest.js';
 import {
   activeAudioItemId,
   audioCurrentTarget,
@@ -81,6 +81,7 @@ const items = computed(() => {
 const audioItems = computed(() => items.value.map((item) => ({
   ...item,
   audioTracks: audioTracksForItem(item),
+  audioRepetitions: audioRepetitionsPerTrackForItem(item),
 })));
 const activeAudioItem = computed(() => audioItems.value.find((item) => item.id === activeAudioItemId.value) || null);
 

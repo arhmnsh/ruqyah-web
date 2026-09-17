@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { locale, t } from '../data/i18n.js';
+import { t } from '../data/i18n.js';
 
 const props = defineProps({
   item: { type: Object, required: true },
@@ -14,7 +14,7 @@ const props = defineProps({
 
 defineEmits(['toggle', 'previous', 'next', 'stop', 'speed']);
 
-const title = computed(() => (locale.value === 'ar' ? props.item.name_ar : props.item.name_en));
+const speedOptions = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 const progress = computed(() => (
   props.duration > 0 ? Math.min((props.currentTime / props.duration) * 100, 100) : 0
 ));
@@ -24,10 +24,9 @@ const progress = computed(() => (
   <aside class="audio-dock" :class="{ 'is-error': status === 'error' }" :aria-label="t('audioPlayer')">
     <div class="audio-dock-copy">
       <p class="audio-dock-kicker">{{ t('audioNowPlaying') }}</p>
-      <p class="audio-dock-title notranslate" :lang="locale" translate="no">{{ title }}</p>
-      <p class="audio-dock-meta">
-        {{ t('audioRepeat', repeat, target) }} · {{ t('audioReciter') }}
-      </p>
+      <p class="audio-dock-title notranslate" lang="ar" dir="rtl" translate="no">{{ item.name_ar }}</p>
+      <p class="audio-dock-subtitle notranslate" lang="en" dir="ltr" translate="no">{{ item.name_en }}</p>
+      <p class="audio-dock-meta">{{ t('audioRepeat', repeat, target) }} · {{ t('audioReciter') }}</p>
       <p v-if="status === 'error'" class="audio-dock-error">{{ t('audioError') }}</p>
     </div>
 
@@ -56,11 +55,25 @@ const progress = computed(() => (
       <div class="audio-dock-progress" aria-hidden="true"><i :style="{ width: `${progress}%` }" /></div>
       <label class="audio-speed-control">
         <span>{{ t('audioSpeed') }}</span>
+        <button
+          class="audio-speed-step"
+          type="button"
+          :aria-label="t('decreaseAudioSpeed')"
+          :disabled="speed <= speedOptions[0]"
+          @click="$emit('speed', Math.max(speedOptions[0], speed - 0.25))"
+        >−</button>
         <select :value="speed" :aria-label="t('audioSpeed')" @change="$emit('speed', Number($event.target.value))">
-          <option v-for="option in [0.75, 1, 1.25, 1.5]" :key="option" :value="option">
+          <option v-for="option in speedOptions" :key="option" :value="option">
             {{ option }}×
           </option>
         </select>
+        <button
+          class="audio-speed-step"
+          type="button"
+          :aria-label="t('increaseAudioSpeed')"
+          :disabled="speed >= speedOptions[speedOptions.length - 1]"
+          @click="$emit('speed', Math.min(speedOptions[speedOptions.length - 1], speed + 0.25))"
+        >+</button>
       </label>
     </div>
   </aside>

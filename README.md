@@ -8,7 +8,8 @@ Morning and evening ruqyah shar‘iyyah as a tappable checklist, a sibling of [a
 - **Reciting for myself / him / her**: the duas that address the person being recited over change wording (أَرْقِي نَفْسِي / أَرْقِيكَ / أَرْقِيكِ, أَعُوذُ / أُعِيذُكَ / أُعِيذُكِ, اشْفِ / اشْفِهِ / اشْفِهَا); personal adhkar stay in the first person
 - **Morning / evening**: chosen from the clock, switchable; a few notes and the tahlīl count (100 in the morning, 10 in the evening) follow it
 - Settings survive reloads; details page with translation, note, and source
-- PWA support (installable, offline shell)
+- Ruqyah audio playback with automatic repetitions, item navigation, and speed control
+- PWA support (installable, with the complete app and local audio precached for offline use)
 
 ## Content
 
@@ -32,6 +33,12 @@ npm run build
 ```
 
 Output lands in `dist`.
+
+The audio files are checked into `public/audio` so the service worker can precache them. To refresh the local audio set from the source recordings, run:
+
+```bash
+npm run audio:download
+```
 
 ## Analytics (PostHog)
 
