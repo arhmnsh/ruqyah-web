@@ -11,6 +11,7 @@ import {
   audioCurrentTarget,
   audioHasActiveItem,
   audioIsPlaying,
+  audioProgress,
   audioState,
   audioStatus,
   nextAudio,
@@ -25,7 +26,7 @@ import {
 import { locale, t } from '../data/i18n';
 import { currentMode, MODE_COPY, MODE_THEME } from '../data/modeStore';
 import { closeTapHint, onboarding } from '../data/onboardingStore';
-import { itemsForForm, resolveItem, SECTIONS } from '../data/ruqyahData';
+import { itemsForForm, resolveItem, SECTIONS, toArabicDigits } from '../data/ruqyahData';
 import { settings } from '../data/settingsStore';
 import {
   getProgress,
@@ -37,6 +38,7 @@ import {
 
 const router = useRouter();
 const showConfetti = ref(false);
+const audioPanelOpen = ref(false);
 let confettiTimer = null;
 const LIST_SCROLL_KEY = 'ruqyah-list-scroll-y';
 
@@ -116,6 +118,7 @@ watch(allCompleted, (next, prev) => {
 
 onBeforeUnmount(() => {
   saveListScroll();
+  audioPanelOpen.value = false;
   stopAudio();
   if (confettiTimer) clearTimeout(confettiTimer);
 });
@@ -166,7 +169,18 @@ function resetCounters() {
 }
 
 function playAllAudio() {
+  audioPanelOpen.value = true;
   playPlaylist(audioItems.value);
+}
+
+function openAudioPanel() {
+  audioPanelOpen.value = true;
+  if (!audioHasActiveItem.value) playPlaylist(audioItems.value);
+}
+
+function closeAudioPanel() {
+  audioPanelOpen.value = false;
+  stopAudio();
 }
 
 function handleAudioToggle() {
@@ -192,6 +206,8 @@ function playItemAudio(item) {
   const index = audioItems.value.findIndex((entry) => entry.id === item.id);
   if (index < 0) return;
 
+  audioPanelOpen.value = true;
+
   if (activeAudioItemId.value === item.id && audioIsPlaying.value) {
     pauseAudio();
     return;
@@ -208,19 +224,15 @@ function playItemAudio(item) {
 
 <template>
   <section>
+    <div class="overall-progress-edge" role="progressbar" :aria-label="t('progressLabel')" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="overallProgress">
+      <i :style="{ width: `${overallProgress}%` }" />
+      <span aria-live="polite">{{ locale === 'ar' ? `${toArabicDigits(completedCount)} / ${toArabicDigits(items.length)}` : `${completedCount} / ${items.length}` }}</span>
+    </div>
     <header class="intro-strip">
       <h2 class="intro-title notranslate" lang="ar" translate="no">{{ copy.title_ar }}</h2>
       <p class="intro-sub">{{ locale === 'ar' ? copy.sub_ar : copy.sub_en }}</p>
       <p class="intro-count" aria-live="polite">{{ t('progressOf', completedCount, items.length) }}</p>
-      <div class="intro-track" role="progressbar" aria-label="Progress through the wird" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="overallProgress"><i :style="{ width: `${overallProgress}%` }" /></div>
-      <div class="audio-launcher">
-        <button class="audio-launch-btn" type="button" @click="handleAudioToggle">
-          <svg v-if="audioIsPlaying" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7V5Zm6 0h4v14h-4V5Z" /></svg>
-          <svg v-else viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7V5Z" /></svg>
-          <span>{{ audioIsPlaying ? t('pauseAudio') : audioStatus === 'complete' ? t('replayAudio') : audioHasActiveItem ? t('resumeAudio') : t('playRuqyah') }}</span>
-        </button>
-        <span class="audio-reciter-note">{{ t('audioReciter') }}</span>
-      </div>
+      <div class="intro-track" role="progressbar" :aria-label="t('progressLabel')" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="overallProgress"><i :style="{ width: `${overallProgress}%` }" /></div>
     </header>
 
     <div class="list-wrap">
@@ -255,19 +267,19 @@ function playItemAudio(item) {
       </div>
     </footer>
     <AudioPlayerBar
-      v-if="audioHasActiveItem && activeAudioItem"
       :item="activeAudioItem"
+      :expanded="audioPanelOpen"
       :repeat="audioState.repetitionIndex + 1"
       :target="audioCurrentTarget"
       :status="audioStatus"
       :speed="audioState.speed"
-      :current-time="audioState.currentTime"
-      :duration="audioState.duration"
+      :progress="audioProgress"
+      @open="openAudioPanel"
+      @close="closeAudioPanel"
       @toggle="handleAudioToggle"
       @previous="previousAudio"
       @next="nextAudio"
       @speed="setAudioSpeed"
-      @stop="stopAudio"
     />
     <ConfettiOverlay :visible="showConfetti" />
 

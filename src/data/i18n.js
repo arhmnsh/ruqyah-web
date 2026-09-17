@@ -64,6 +64,7 @@ const STRINGS = {
     eveningToast: 'Evening ruqyah',
 
     progressOf: (done, total) => `${done} of ${total}`,
+    progressLabel: 'Progress through the wird',
     resetCounters: 'Reset counters',
     resetConfirm: 'Reset all counters?',
     playRuqyah: 'Play Ruqyah',
@@ -74,6 +75,7 @@ const STRINGS = {
     previousAudio: 'Previous item',
     nextAudio: 'Next item',
     stopAudio: 'Stop audio',
+    closeAudio: 'Close audio player',
     audioPlayer: 'Ruqyah audio player',
     audioNowPlaying: 'Now playing',
     audioRepeat: (current, target) => `Recitation ${current} of ${target}`,
@@ -153,6 +155,7 @@ const STRINGS = {
     eveningToast: 'ورد المساء',
 
     progressOf: (done, total) => `${toArabicDigits(done)} من ${toArabicDigits(total)}`,
+    progressLabel: 'التقدم في الورد',
     resetCounters: 'إعادة ضبط العدّادات',
     resetConfirm: 'هل تريد إعادة ضبط جميع العدّادات؟',
     playRuqyah: 'تشغيل الرقية',
@@ -163,6 +166,7 @@ const STRINGS = {
     previousAudio: 'العنصر السابق',
     nextAudio: 'العنصر التالي',
     stopAudio: 'إيقاف الصوت',
+    closeAudio: 'إغلاق مشغّل الصوت',
     audioPlayer: 'مشغّل صوت الرقية',
     audioNowPlaying: 'يُشغّل الآن',
     audioRepeat: (current, target) => `القراءة ${toArabicDigits(current)} من ${toArabicDigits(target)}`,

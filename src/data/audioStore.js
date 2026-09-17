@@ -55,6 +55,16 @@ export const audioHasActiveItem = computed(
   () => audioState.itemIndex >= 0 && Boolean(currentEntry()),
 );
 export const audioCurrentTarget = computed(() => Number(currentEntry()?.count_display) || 1);
+export const audioProgress = computed(() => {
+  const entry = currentEntry();
+  const segmentCount = entry?.audioTracks?.length || 0;
+  if (!segmentCount) return 0;
+
+  const segmentProgress = audioState.duration > 0
+    ? Math.min(audioState.currentTime / audioState.duration, 1)
+    : 0;
+  return Math.min(((audioState.segmentIndex + segmentProgress) / segmentCount) * 100, 100);
+});
 
 function setTrack({ autoplay = true } = {}) {
   const entry = currentEntry();
