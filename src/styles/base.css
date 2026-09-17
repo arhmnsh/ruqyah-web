@@ -449,7 +449,7 @@ main {
 .overall-progress-edge span {
   position: absolute;
   inset-inline-end: 10px;
-  top: 7px;
+  top: 1px;
   padding: 2px 6px;
   border-radius: 999px;
   background: rgba(20, 55, 47, 0.72);
@@ -458,6 +458,15 @@ main {
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
   direction: ltr;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+
+.app-shell.is-header-hidden .overall-progress-edge span {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .audio-player-anchor {
@@ -547,7 +556,9 @@ main {
 }
 
 .audio-dock-copy {
+  flex: 1 1 auto;
   min-width: 0;
+  text-align: start;
 }
 
 .audio-dock-kicker,
@@ -572,6 +583,7 @@ main {
   font-size: 0.98rem;
   font-weight: 700;
   text-overflow: ellipsis;
+  text-align: start;
   white-space: nowrap;
 }
 
@@ -580,6 +592,7 @@ main {
   color: rgba(255, 248, 232, 0.78);
   font-size: 0.74rem;
   text-overflow: ellipsis;
+  text-align: end;
   white-space: nowrap;
 }
 
@@ -692,8 +705,14 @@ main {
   border-radius: 999px;
   background: rgba(0, 0, 0, 0.18);
   color: var(--text-strong);
+  color-scheme: dark;
   padding: 4px 9px;
   font: inherit;
+}
+
+.audio-speed-control option {
+  background: #123c34;
+  color: var(--text-strong);
 }
 
 .audio-speed-step {
@@ -1359,7 +1378,7 @@ main {
 .intro-strip {
   padding: 16px 14px 6px;
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr;
   align-items: end;
   gap: 4px 12px;
 }
@@ -1381,26 +1400,6 @@ main {
   color: var(--text-soft);
   grid-column: 1;
   text-align: right;
-}
-
-.intro-count {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  align-self: center;
-  unicode-bidi: plaintext;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-soft);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-.intro-count b {
-  display: block;
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--text-strong);
-  line-height: 1.1;
 }
 
 .intro-track {

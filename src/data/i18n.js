@@ -63,7 +63,6 @@ const STRINGS = {
     morningToast: 'Morning ruqyah',
     eveningToast: 'Evening ruqyah',
 
-    progressOf: (done, total) => `${done} of ${total}`,
     progressLabel: 'Progress through the wird',
     resetCounters: 'Reset counters',
     resetConfirm: 'Reset all counters?',
@@ -154,7 +153,6 @@ const STRINGS = {
     morningToast: 'ورد الصباح',
     eveningToast: 'ورد المساء',
 
-    progressOf: (done, total) => `${toArabicDigits(done)} من ${toArabicDigits(total)}`,
     progressLabel: 'التقدم في الورد',
     resetCounters: 'إعادة ضبط العدّادات',
     resetConfirm: 'هل تريد إعادة ضبط جميع العدّادات؟',

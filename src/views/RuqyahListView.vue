@@ -103,7 +103,19 @@ const rows = computed(() => {
 
 const completedCount = computed(() => items.value.filter((item) => item.currentCount >= item.count_display).length);
 const allCompleted = computed(() => items.value.length > 0 && completedCount.value === items.value.length);
-const overallProgress = computed(() => (items.value.length ? Math.round((completedCount.value / items.value.length) * 100) : 0));
+const totalRecitations = computed(() => items.value.reduce(
+  (total, item) => total + (Number(item.count_display) || 0),
+  0,
+));
+const completedRecitations = computed(() => items.value.reduce(
+  (total, item) => total + Math.min(Math.max(item.currentCount, 0), Number(item.count_display) || 0),
+  0,
+));
+const overallProgress = computed(() => (
+  totalRecitations.value
+    ? Math.round((completedRecitations.value / totalRecitations.value) * 100)
+    : 0
+));
 
 watch(allCompleted, (next, prev) => {
   if (!prev && next) {
@@ -226,12 +238,11 @@ function playItemAudio(item) {
   <section>
     <div class="overall-progress-edge" role="progressbar" :aria-label="t('progressLabel')" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="overallProgress">
       <i :style="{ width: `${overallProgress}%` }" />
-      <span aria-live="polite">{{ locale === 'ar' ? `${toArabicDigits(completedCount)} / ${toArabicDigits(items.length)}` : `${completedCount} / ${items.length}` }}</span>
+      <span aria-live="polite">{{ locale === 'ar' ? `${toArabicDigits(completedRecitations)} / ${toArabicDigits(totalRecitations)}` : `${completedRecitations} / ${totalRecitations}` }}</span>
     </div>
     <header class="intro-strip">
       <h2 class="intro-title notranslate" lang="ar" translate="no">{{ copy.title_ar }}</h2>
       <p class="intro-sub">{{ locale === 'ar' ? copy.sub_ar : copy.sub_en }}</p>
-      <p class="intro-count" aria-live="polite">{{ t('progressOf', completedCount, items.length) }}</p>
       <div class="intro-track" role="progressbar" :aria-label="t('progressLabel')" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="overallProgress"><i :style="{ width: `${overallProgress}%` }" /></div>
     </header>
 
