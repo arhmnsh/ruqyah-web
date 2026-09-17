@@ -1208,7 +1208,7 @@ main {
 }
 
 .details-shell {
-  width: min(860px, 100%);
+  width: min(840px, 100%);
   margin: 0 auto;
 }
 
@@ -1300,15 +1300,24 @@ main {
   color: rgba(255, 247, 232, 0.82);
 }
 
+@media (min-width: 561px) {
+  .intro-strip,
+  .list-wrap,
+  .list-footer {
+    width: min(calc(100% - 32px), 840px);
+    margin-inline: auto;
+  }
+}
+
 @media (min-width: 900px) {
   .app-topbar {
-    padding-inline: max(24px, calc((100vw - 1240px) / 2 + 24px));
+    padding-inline: max(24px, calc((100vw - 840px) / 2 + 24px));
   }
 
   .intro-strip,
   .list-wrap,
   .list-footer {
-    width: min(calc(100% - 32px), 1240px);
+    width: min(calc(100% - 32px), 840px);
     margin-inline: auto;
   }
 
