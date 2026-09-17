@@ -27,6 +27,10 @@ for (const [local, remote] of entries) {
     // The file is not present yet.
   }
 
+  if (!remote) {
+    throw new Error(`Missing bundled audio ${local}; restore the committed passage file before running this command.`);
+  }
+
   const response = await fetch(remote);
   if (!response.ok) {
     throw new Error(`Could not download ${remote}: ${response.status} ${response.statusText}`);

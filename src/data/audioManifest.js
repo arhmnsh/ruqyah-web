@@ -6,7 +6,6 @@ export const AUDIO_SOURCE_LABEL = 'Mishary Alafasy · offline audio';
 export const LOCAL_AUDIO_BASE = '/audio';
 const QURAN_AUDIO_BASE = `${LOCAL_AUDIO_BASE}/quran`;
 const DUA_AUDIO_BASE = `${LOCAL_AUDIO_BASE}/dua`;
-const REMOTE_QURAN_AUDIO_BASE = 'https://everyayah.com/data/Alafasy_128kbps';
 const REMOTE_RUQYAH_AUDIO_BASE = 'https://archive.org/download/ruqia-alafasy';
 const REMOTE_MORNING_AUDIO_BASE = 'https://archive.org/download/azkar-al-sabah-1425';
 
@@ -58,18 +57,10 @@ const DUA_AUDIO = Object.freeze({
   },
 });
 
-function padded(value) {
-  return String(value).padStart(3, '0');
-}
-
-function quranAudioForPassage(key, base = QURAN_AUDIO_BASE) {
+function quranAudioForPassage(key) {
   const passage = passages[key];
   if (!passage) return [];
-
-  return Array.from({ length: passage.to - passage.from + 1 }, (_, offset) => {
-    const ayah = passage.from + offset;
-    return `${base}/${padded(passage.surah)}${padded(ayah)}.mp3`;
-  });
+  return [`${QURAN_AUDIO_BASE}/passages/${key}.mp3`];
 }
 
 export function audioTracksForItem(item) {
@@ -86,9 +77,8 @@ export function audioRepetitionsPerTrackForItem(item) {
 
 export function audioDownloadEntriesForItem(item) {
   if (item?.quran) {
-    const localTracks = quranAudioForPassage(item.quran);
-    const remoteTracks = quranAudioForPassage(item.quran, REMOTE_QURAN_AUDIO_BASE);
-    return localTracks.map((local, index) => ({ local, remote: remoteTracks[index] }));
+    const local = quranAudioForPassage(item.quran)[0];
+    return local ? [{ local, remote: null }] : [];
   }
 
   const duaAudio = DUA_AUDIO[item?.key];
