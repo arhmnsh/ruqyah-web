@@ -9,12 +9,20 @@ import { toArabicDigits } from './ruqyahData';
 //
 // `?lang=ar` or `?lang=en` in the URL overrides the detection — handy for testing without having
 // to change the device's language, and for sharing a link in a specific language.
+const USER_LOCALE_KEY = 'ruqyah-user-locale-v1';
+
 function detectLocale() {
   try {
     const override = new URLSearchParams(window.location.search).get('lang');
     if (override === 'ar' || override === 'en') return override;
   } catch {
     // ignore malformed URLs
+  }
+  try {
+    const saved = localStorage.getItem(USER_LOCALE_KEY);
+    if (saved === 'ar' || saved === 'en') return saved;
+  } catch {
+    // ignore storage errors
   }
   try {
     const langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || ''];
@@ -26,6 +34,19 @@ function detectLocale() {
 }
 
 export const locale = ref(typeof window === 'undefined' ? 'en' : detectLocale());
+
+export function setLocale(lang) {
+  if (lang !== 'ar' && lang !== 'en') return;
+  locale.value = lang;
+  try {
+    localStorage.setItem(USER_LOCALE_KEY, lang);
+  } catch {
+    // ignore storage errors
+  }
+  if (typeof document !== 'undefined') {
+    document.documentElement.setAttribute('lang', lang);
+  }
+}
 
 if (typeof document !== 'undefined') {
   document.documentElement.setAttribute('dir', 'rtl');
@@ -62,6 +83,11 @@ const STRINGS = {
     switchToEvening: 'Switch to evening ruqyah',
     morningToast: 'Morning ruqyah',
     eveningToast: 'Evening ruqyah',
+
+    languageLabel: 'Language',
+    languageHelp: 'Interface language for buttons, settings, and guidance. The Qur’an and dua recitations are always Arabic with English translation.',
+    languageEn: 'English',
+    languageAr: 'العربية',
 
     fontSizeLabel: 'Text Size',
     fontSizeHelp: 'Adjust the size of the Arabic recitation text. You can also pinch with two fingers anywhere on the list to scale it.',
@@ -159,6 +185,11 @@ const STRINGS = {
     switchToEvening: 'التبديل إلى ورد المساء',
     morningToast: 'ورد الصباح',
     eveningToast: 'ورد المساء',
+
+    languageLabel: 'اللغة',
+    languageHelp: 'لغة واجهة التطبيق للأزرار والإعدادات والتعليمات. نصوص القرآن والأدعية تظل دائمًا بالعربية.',
+    languageEn: 'English',
+    languageAr: 'العربية',
 
     fontSizeLabel: 'حجم الخط',
     fontSizeHelp: 'تعديل حجم النص القرآني والأدعية. يمكنك أيضًا استخدام إيماءة التكبير أو التصغير بإصبعين لتغيير الحجم.',

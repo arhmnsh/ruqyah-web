@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted } from 'vue';
 
-import { locale, t } from '../data/i18n';
+import { locale, setLocale, t } from '../data/i18n';
 import { currentMode, EVENING_MODE, MORNING_MODE, setMode } from '../data/modeStore';
 import { itemsForForm } from '../data/ruqyahData';
 import {
@@ -52,6 +52,11 @@ const targets = computed(() => [
 const modes = computed(() => [
   { value: MORNING_MODE, label: t('morning'), help: 'وِرْدُ الصَّبَاحِ' },
   { value: EVENING_MODE, label: t('evening'), help: 'وِرْدُ الْمَسَاءِ' },
+]);
+
+const languages = computed(() => [
+  { value: 'en', label: 'English', help: 'EN' },
+  { value: 'ar', label: 'العربية', help: 'عربي' },
 ]);
 
 const fontSizes = computed(() => [
@@ -148,6 +153,23 @@ onBeforeUnmount(() => {
               type="button"
               :aria-pressed="settings.fontSize === option.value"
               @click="setFontSize(option.value)"
+            >
+              {{ option.label }}
+              <small>{{ option.help }}</small>
+            </button>
+          </div>
+        </div>
+
+        <div class="setting">
+          <p class="setting-label">{{ t('languageLabel') }}</p>
+          <p class="setting-help">{{ t('languageHelp') }}</p>
+          <div class="segmented" role="group" :aria-label="t('languageLabel')">
+            <button
+              v-for="option in languages"
+              :key="option.value"
+              type="button"
+              :aria-pressed="locale === option.value"
+              @click="setLocale(option.value)"
             >
               {{ option.label }}
               <small>{{ option.help }}</small>
