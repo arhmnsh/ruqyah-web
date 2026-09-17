@@ -6,8 +6,11 @@ export default defineConfig({
   plugins: [
     vue(),
     VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.js',
       registerType: 'autoUpdate',
-      includeAssets: ['icons/apple-touch-icon.png'],
+      includeAssets: ['icons/apple-touch-icon.png', 'icons/icon-base.svg'],
       manifest: {
         id: '/',
         name: 'Ruqyah',
@@ -37,11 +40,13 @@ export default defineConfig({
           },
         ],
       },
-      workbox: {
+      injectManifest: {
         globPatterns: ['**/*.{js,css,html,mp3,png,svg,ico,json,txt,woff2}'],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
       },
       devOptions: {
-        enabled: false,
+        enabled: true,
+        type: 'module',
       },
     }),
   ],
