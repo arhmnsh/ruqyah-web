@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, onMounted } from 'vue';
 
 import { locale, t } from '../data/i18n';
 import { currentMode, EVENING_MODE, MORNING_MODE, setMode } from '../data/modeStore';
@@ -48,6 +48,20 @@ const modes = computed(() => [
   { value: MORNING_MODE, label: t('morning'), help: 'وِرْدُ الصَّبَاحِ' },
   { value: EVENING_MODE, label: t('evening'), help: 'وِرْدُ الْمَسَاءِ' },
 ]);
+
+function handleKeyDown(e) {
+  if (e.key === 'Escape' && props.open) {
+    emit('close');
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+});
 </script>
 
 <template>

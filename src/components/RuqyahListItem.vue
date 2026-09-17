@@ -72,9 +72,14 @@ const isComplete = computed(() => props.progress >= 100);
           </svg>
         </button>
       </div>
-      <p class="side-counter">{{ locale === 'ar' ? `${toArabicDigits(currentCount)} \u002F ${toArabicDigits(item.count_display)}` : `${currentCount} / ${item.count_display}` }}</p>
+      <p class="side-counter" aria-hidden="true">{{ locale === 'ar' ? `${toArabicDigits(currentCount)} \u002F ${toArabicDigits(item.count_display)}` : `${currentCount} / ${item.count_display}` }}</p>
     </aside>
-    <button class="body-hit" type="button" @click="emit('increment')">
+    <button
+      class="body-hit"
+      type="button"
+      :aria-label="`${locale === 'ar' ? item.name_ar : item.name_en} — ${currentCount} / ${item.count_display}`"
+      @click="emit('increment')"
+    >
       <p class="row-head">
         <span class="row-name notranslate" lang="ar" translate="no">{{ item.name_ar }}</span>
         <span v-if="item.ref" class="row-ref">{{ item.ref }}</span>

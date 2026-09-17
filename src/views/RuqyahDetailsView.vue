@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 import { currentMode } from '../data/modeStore';
@@ -9,6 +9,20 @@ import { settings } from '../data/settingsStore';
 
 const route = useRoute();
 const router = useRouter();
+
+function handleKeyDown(e) {
+  if (e.key === 'Escape') {
+    router.push('/');
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+});
 
 const item = computed(() => {
   const id = Number(route.params.id);

@@ -1,4 +1,5 @@
 <script setup>
+import { onBeforeUnmount, onMounted } from 'vue';
 import { locale, t } from '../data/i18n';
 import { useFlyTransition } from '../utils/flyTransition';
 
@@ -12,6 +13,20 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const { onEnter, onLeave } = useFlyTransition(() => props.anchorEl || null, '.benefits-modal');
+
+function handleKeyDown(e) {
+  if (e.key === 'Escape' && props.open) {
+    emit('close');
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyDown);
+});
 </script>
 
 <template>
