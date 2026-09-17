@@ -1,8 +1,41 @@
+import { createHash } from 'node:crypto';
+import { readdirSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { VitePWA } from 'vite-plugin-pwa';
 
+function collectAudioVersions(directory, prefix = '') {
+  const entries = readdirSync(directory, { withFileTypes: true });
+
+  return Object.fromEntries(entries.flatMap((entry) => {
+    const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
+    const absolutePath = `${directory}/${entry.name}`;
+
+    if (entry.isDirectory()) {
+      return Object.entries(collectAudioVersions(absolutePath, relativePath));
+    }
+
+    if (!entry.name.endsWith('.mp3')) return [];
+
+    const version = createHash('sha256')
+      .update(readFileSync(absolutePath))
+      .digest('hex')
+      .slice(0, 12);
+
+    return [[relativePath, version]];
+  }));
+}
+
+const audioVersions = collectAudioVersions(
+  fileURLToPath(new URL('./public/audio', import.meta.url)),
+);
+
 export default defineConfig({
+  define: {
+    'globalThis.__AUDIO_VERSIONS__': JSON.stringify(audioVersions),
+  },
   plugins: [
     vue(),
     VitePWA({
@@ -41,7 +74,7 @@ export default defineConfig({
         ],
       },
       injectManifest: {
-        globPatterns: ['**/*.{js,css,html,mp3,png,svg,ico,json,txt,woff2}'],
+        globPatterns: ['**/*.{js,css,html,png,svg,ico,json,txt,woff2}'],
         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
       },
       devOptions: {
