@@ -400,7 +400,7 @@ function playItemAudio(item) {
       </div>
     </footer>
     <AudioPlayerBar
-      :item="activeAudioItem"
+      :item="activeAudioItem || audioItems[0]"
       :expanded="audioPanelOpen"
       :repeat="audioState.repetitionIndex + 1"
       :target="audioCurrentTarget"
