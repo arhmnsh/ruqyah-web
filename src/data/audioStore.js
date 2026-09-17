@@ -1,6 +1,6 @@
 import { computed, reactive } from 'vue';
 import { currentMode } from './modeStore.js';
-import { incrementReadCount } from './progressStore.js';
+import { getReadCount, incrementReadCount } from './progressStore.js';
 
 export const audioState = reactive({
   playlist: [],
@@ -93,9 +93,30 @@ function setTrack({ autoplay = true } = {}) {
   });
 }
 
+function getInitialRepetition(entry) {
+  if (!entry) return 0;
+  const target = Number(entry.count_display) || 1;
+  const count = getReadCount(entry.id, currentMode.value);
+  if (count > 0 && count < target) {
+    return count;
+  }
+  return 0;
+}
+
+export function syncAudioRepetition() {
+  const entry = currentEntry();
+  if (!entry) return;
+  const target = Number(entry.count_display) || 1;
+  const count = getReadCount(entry.id, currentMode.value);
+  if (count > audioState.repetitionIndex && count < target) {
+    audioState.repetitionIndex = count;
+  }
+}
+
 function resetItemPosition(index) {
   audioState.itemIndex = index;
-  audioState.repetitionIndex = 0;
+  const entry = audioState.playlist[index];
+  audioState.repetitionIndex = getInitialRepetition(entry);
   audioState.segmentIndex = 0;
 }
 
@@ -177,6 +198,8 @@ export function resumeAudio() {
   const player = ensureAudioElement();
   if (!player || !currentEntry()) return;
 
+  syncAudioRepetition();
+
   player.play().then(() => {
     audioState.status = 'playing';
     audioState.error = null;
@@ -184,6 +207,17 @@ export function resumeAudio() {
     audioState.status = 'paused';
     audioState.error = 'playback';
   });
+}
+
+export function restartAudio({ autoplay = true } = {}) {
+  const player = ensureAudioElement();
+  const entry = currentEntry();
+  if (!player || !entry) return;
+
+  syncAudioRepetition();
+  audioState.segmentIndex = 0;
+  audioState.currentTime = 0;
+  setTrack({ autoplay });
 }
 
 export function setAudioSpeed(speed) {

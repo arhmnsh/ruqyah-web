@@ -20,9 +20,11 @@ import {
   playPlaylist,
   playSingle,
   previousAudio,
+  restartAudio,
   resumeAudio,
   setAudioSpeed,
   stopAudio,
+  syncAudioRepetition,
 } from '../data/audioStore.js';
 import { locale, t } from '../data/i18n';
 import { currentMode, MODE_COPY, MODE_THEME } from '../data/modeStore';
@@ -42,6 +44,38 @@ const showConfetti = ref(false);
 const audioPanelOpen = ref(false);
 let confettiTimer = null;
 const LIST_SCROLL_KEY = 'ruqyah-list-scroll-y';
+
+const LAST_INTERACTED_KEY = 'ruqyah-last-interacted-id';
+
+function saveLastInteracted(id) {
+  try {
+    if (id === null) sessionStorage.removeItem(LAST_INTERACTED_KEY);
+    else sessionStorage.setItem(LAST_INTERACTED_KEY, String(id));
+  } catch {
+    // ignore storage failures
+  }
+}
+
+function loadLastInteracted() {
+  try {
+    const val = sessionStorage.getItem(LAST_INTERACTED_KEY);
+    return val !== null && val !== '' ? Number(val) : null;
+  } catch {
+    return null;
+  }
+}
+
+const lastInteractedItemId = ref(loadLastInteracted());
+
+function setLastInteracted(id) {
+  lastInteractedItemId.value = id;
+  saveLastInteracted(id);
+}
+
+function getFirstIncompleteIndex() {
+  const index = items.value.findIndex((item) => item.currentCount < item.count_display);
+  return index >= 0 ? index : 0;
+}
 
 function saveListScroll() {
   try {
@@ -129,6 +163,11 @@ watch(allCompleted, (next, prev) => {
   }
 });
 
+watch([currentMode, () => settings.form], () => {
+  stopAudio();
+  setLastInteracted(null);
+});
+
 const fontToastVisible = ref(false);
 const fontToastText = ref('');
 let fontToastTimer = null;
@@ -159,7 +198,7 @@ onBeforeUnmount(() => {
   if (fontToastTimer) clearTimeout(fontToastTimer);
   saveListScroll();
   audioPanelOpen.value = false;
-  stopAudio();
+  pauseAudio();
   if (confettiTimer) clearTimeout(confettiTimer);
 });
 
@@ -177,12 +216,18 @@ function handleIncrement(item) {
     const currentIndex = items.value.findIndex((entry) => entry.id === item.id);
     if (currentIndex >= 0 && currentIndex < items.value.length - 1) {
       nextId = items.value[currentIndex + 1].id;
+      setLastInteracted(nextId);
       const currentRow = document.querySelector(`.athkar-row[data-item-id="${item.id}"]`);
       if (currentRow) anchorTop = currentRow.getBoundingClientRect().top;
+    } else {
+      setLastInteracted(item.id);
     }
+  } else {
+    setLastInteracted(item.id);
   }
 
   incrementReadCount(item.id, target, currentMode.value);
+  syncAudioRepetition();
 
   if (willCompleteThisTap && anchorTop !== null && nextId !== null) {
     nextTick(() => {
@@ -200,12 +245,25 @@ function handleIncrement(item) {
 
 function openDetails(item) {
   saveListScroll();
+  const current = getReadCount(item.id, currentMode.value);
+  if (current >= item.count_display) {
+    const currentIndex = items.value.findIndex((entry) => entry.id === item.id);
+    if (currentIndex >= 0 && currentIndex < items.value.length - 1) {
+      setLastInteracted(items.value[currentIndex + 1].id);
+    } else {
+      setLastInteracted(item.id);
+    }
+  } else {
+    setLastInteracted(item.id);
+  }
   router.push({ name: 'ruqyah-details', params: { id: item.id } });
 }
 
 function resetCounters() {
   if (!window.confirm(t('resetConfirm'))) return;
   resetAllCounts();
+  stopAudio();
+  setLastInteracted(null);
 }
 
 function playAllAudio() {
@@ -215,12 +273,47 @@ function playAllAudio() {
 
 function openAudioPanel() {
   audioPanelOpen.value = true;
-  if (!audioHasActiveItem.value) playPlaylist(audioItems.value);
+
+  // 1. If the user interacted with an item in the checklist since last close, start playback from that item
+  if (lastInteractedItemId.value !== null) {
+    const targetId = lastInteractedItemId.value;
+    setLastInteracted(null);
+    const index = audioItems.value.findIndex((entry) => entry.id === targetId);
+    if (index >= 0) {
+      playPlaylist(audioItems.value, index);
+      return;
+    }
+  }
+
+  // 2. If audio was previously loaded, restart playback from the beginning for that recitation
+  if (audioHasActiveItem.value) {
+    if (audioStatus.value === 'playing') {
+      return;
+    }
+    if (audioStatus.value === 'complete') {
+      const startIndex = getFirstIncompleteIndex();
+      playPlaylist(audioItems.value, startIndex);
+      return;
+    }
+    audioState.singleMode = false;
+    restartAudio({ autoplay: true });
+    return;
+  }
+
+  // 3. Fresh session: begin from the first incomplete item (or 0)
+  const startIndex = getFirstIncompleteIndex();
+  playPlaylist(audioItems.value, startIndex);
 }
 
 function closeAudioPanel() {
   audioPanelOpen.value = false;
-  stopAudio();
+  pauseAudio();
+  // Reset audio playback position so reopening starts fresh from the beginning
+  if (audioHasActiveItem.value) {
+    audioState.segmentIndex = 0;
+    audioState.currentTime = 0;
+  }
+  setLastInteracted(null);
 }
 
 function handleAudioToggle() {
@@ -230,7 +323,8 @@ function handleAudioToggle() {
   }
 
   if (audioStatus.value === 'complete') {
-    playAllAudio();
+    const startIndex = getFirstIncompleteIndex();
+    playPlaylist(audioItems.value, startIndex);
     return;
   }
 
@@ -239,7 +333,8 @@ function handleAudioToggle() {
     return;
   }
 
-  playAllAudio();
+  const startIndex = getFirstIncompleteIndex();
+  playPlaylist(audioItems.value, startIndex);
 }
 
 function playItemAudio(item) {
