@@ -122,7 +122,7 @@ const STRINGS = {
     closeSpeedMenu: 'Close speed settings',
     audioReciter: 'Mishary Alafasy',
     audioError: 'This audio could not be loaded. Try again or choose another item.',
-    openAthkar: 'Open Athkar',
+    openAthkar: 'For daily remembrance: morning & evening Athkar',
     byline: 'by AbdurRahaman Shah',
 
     tapHint: 'Tap anywhere on a passage to count one recitation.',
@@ -230,7 +230,7 @@ const STRINGS = {
     closeSpeedMenu: 'إغلاق إعدادات السرعة',
     audioReciter: 'مشاري العفاسي',
     audioError: 'تعذّر تحميل هذا الصوت. حاول مرة أخرى أو اختر عنصرًا آخر.',
-    openAthkar: 'فتح تطبيق الأذكار',
+    openAthkar: 'للذكر اليومي: أذكار الصباح والمساء',
     byline: 'بقلم عبدالرحمن شاه',
 
     tapHint: 'اضغط في أي مكان على السطر لعدّ قراءة واحدة.',
