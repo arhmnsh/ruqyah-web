@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { locale, t } from '../data/i18n.js';
 
 const props = defineProps({
@@ -38,8 +38,40 @@ watch(
 const displayItem = computed(() => props.item || cachedItem.value);
 const isExpanded = computed(() => props.expanded && Boolean(displayItem.value));
 
+let hasShownInitialLabelInSession = false;
+const isInitialLabelVisible = ref(false);
+let labelTimer = null;
+const compactBtnRef = ref(null);
+const labelTextRef = ref(null);
+
+function calculateLabelWidth() {
+  if (labelTextRef.value && compactBtnRef.value) {
+    const textWidth = Math.ceil(labelTextRef.value.getBoundingClientRect().width);
+    if (textWidth > 0) {
+      // 56px icon + textWidth + 20px padding
+      const pillWidth = 56 + textWidth + 20;
+      compactBtnRef.value.parentElement?.style.setProperty('--labeled-pill-width', `${pillWidth}px`);
+    }
+  }
+}
+
+function handleCompactClick() {
+  if (labelTimer) {
+    clearTimeout(labelTimer);
+    labelTimer = null;
+  }
+  isInitialLabelVisible.value = false;
+  emit('open');
+}
+
 watch(isExpanded, (expanded) => {
-  if (!expanded) {
+  if (expanded) {
+    if (labelTimer) {
+      clearTimeout(labelTimer);
+      labelTimer = null;
+    }
+    isInitialLabelVisible.value = false;
+  } else {
     isSpeedPopoverOpen.value = false;
   }
 });
@@ -237,9 +269,27 @@ function handleDocumentClick(event) {
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown);
   document.addEventListener('pointerdown', handleDocumentClick);
+
+  if (!hasShownInitialLabelInSession && !isExpanded.value) {
+    isInitialLabelVisible.value = true;
+    hasShownInitialLabelInSession = true;
+
+    nextTick(() => {
+      calculateLabelWidth();
+    });
+
+    labelTimer = setTimeout(() => {
+      isInitialLabelVisible.value = false;
+      labelTimer = null;
+    }, 3000);
+  }
 });
 
 onBeforeUnmount(() => {
+  if (labelTimer) {
+    clearTimeout(labelTimer);
+    labelTimer = null;
+  }
   window.removeEventListener('keydown', handleKeyDown);
   document.removeEventListener('pointerdown', handleDocumentClick);
 });
@@ -248,7 +298,11 @@ onBeforeUnmount(() => {
 <template>
   <div
     class="audio-player-anchor"
-    :class="{ 'is-expanded': isExpanded, 'has-speed-popover': isSpeedPopoverOpen && isExpanded }"
+    :class="{
+      'is-expanded': isExpanded,
+      'has-speed-popover': isSpeedPopoverOpen && isExpanded,
+      'has-label': isInitialLabelVisible && !isExpanded,
+    }"
     :role="isExpanded ? 'region' : null"
     :aria-label="isExpanded ? t('audioPlayer') : null"
   >
@@ -265,18 +319,25 @@ onBeforeUnmount(() => {
     <!-- Morphing color layer for circular button face -->
     <div class="audio-morph-bg" aria-hidden="true" />
 
-    <!-- Circular Playback Button Face -->
+    <!-- Circular / Labeled Playback Button Face -->
     <button
+      ref="compactBtnRef"
       class="audio-compact-btn"
+      :class="{ 'has-label': isInitialLabelVisible && !isExpanded }"
       type="button"
-      :aria-label="t('playRuqyah')"
+      :aria-label="isInitialLabelVisible ? t('listenRuqyah') : t('playRuqyah')"
       :tabindex="isExpanded ? -1 : 0"
       :aria-hidden="isExpanded"
-      @click="$emit('open')"
+      @click="handleCompactClick"
     >
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="m8 5 11 7-11 7V5Z" />
-      </svg>
+      <span class="audio-compact-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="m8 5 11 7-11 7V5Z" />
+        </svg>
+      </span>
+      <span class="audio-compact-label-wrap" aria-hidden="true">
+        <span ref="labelTextRef" class="audio-compact-label">{{ t('listenRuqyah') }}</span>
+      </span>
     </button>
 
     <!-- Expanded Playback Dock -->
