@@ -18,7 +18,6 @@ import {
   nextAudio,
   pauseAudio,
   playPlaylist,
-  playSingle,
   previousAudio,
   restartAudio,
   resumeAudio,
@@ -336,25 +335,6 @@ function handleAudioToggle() {
   const startIndex = getFirstIncompleteIndex();
   playPlaylist(audioItems.value, startIndex);
 }
-
-function playItemAudio(item) {
-  const index = audioItems.value.findIndex((entry) => entry.id === item.id);
-  if (index < 0) return;
-
-  audioPanelOpen.value = true;
-
-  if (activeAudioItemId.value === item.id && audioIsPlaying.value) {
-    pauseAudio();
-    return;
-  }
-
-  if (activeAudioItemId.value === item.id && audioStatus.value === 'paused') {
-    resumeAudio();
-    return;
-  }
-
-  playSingle(audioItems.value, index);
-}
 </script>
 
 <template>
@@ -382,11 +362,8 @@ function playItemAudio(item) {
           :current-count="row.item.currentCount"
           :progress="row.item.progress"
           :theme="theme"
-          :audio-active="activeAudioItemId === row.item.id"
-          :audio-playing="activeAudioItemId === row.item.id && audioIsPlaying"
           @increment="handleIncrement(row.item)"
           @details="openDetails(row.item)"
-          @audio="playItemAudio(row.item)"
         />
       </template>
     </div>
